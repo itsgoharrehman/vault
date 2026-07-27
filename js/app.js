@@ -52,6 +52,8 @@
     let cryptoKey = null;
     let passwordsList = []; // Stores the decrypted password entries in memory
     let displayOrder = [];  // Tracks current display order (array of ids)
+    let notesList = [];     // Stores the decrypted note entries in memory
+    let notesDisplayOrder = []; // Tracks current notes display order (array of ids)
 
     /* ---------- Authenticate Session ---------- */
     const { data: { session: currentSession } } = await supabase.auth.getSession();
@@ -127,6 +129,21 @@
     const userEmailDisplay = document.getElementById('user-email');
     const changePwForm = document.getElementById('change-pw-form');
     const settingsSubmitBtn = document.getElementById('settings-submit');
+
+    // Notes Elements
+    const notesGridContainer = document.getElementById('notes-grid-container');
+    const notesSearchInput = document.getElementById('notes-search-input');
+    const addNoteBtn = document.getElementById('add-note-btn');
+    const noteModal = document.getElementById('note-modal');
+    const noteForm = document.getElementById('note-form');
+    const noteFormTitle = document.getElementById('note-form-title');
+    const closeNoteModalBtn = document.getElementById('close-note-modal-btn');
+    const noteCancelBtn = document.getElementById('note-cancel-btn');
+    const noteEditIdInput = document.getElementById('note-edit-id');
+    const noteTitleInput = document.getElementById('note-title');
+    const noteContentInput = document.getElementById('note-content');
+    const noteCharCount = document.getElementById('note-char-count');
+    const noteSaveBtn = document.getElementById('note-save-btn');
 
 
     /* ---------- Profile Info Initialization ---------- */
@@ -947,6 +964,22 @@
                 );
             }
 
+            // 3b. Also re-encrypt all secure notes
+            for (let item of notesList) {
+                if (item.decryptedContent === '[Decryption Error]') continue;
+                const encrypted = await window.VaultCrypto.encrypt(item.decryptedContent, newKey);
+                reEncryptPromises.push(
+                    supabase
+                        .from('notes')
+                        .update({
+                            content: encrypted.ciphertext,
+                            iv: encrypted.iv,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', item.id)
+                );
+            }
+
             // Execute all updates
             await Promise.all(reEncryptPromises);
 
@@ -962,8 +995,9 @@
             changePwForm.reset();
             showToast('Success', 'Master password updated and credentials re-encrypted.', 'success');
 
-            // Refresh decrypted passwords list view
+            // Refresh decrypted passwords and notes list views
             fetchPasswords();
+            fetchNotes();
 
         } catch (err) {
             console.error(err);
@@ -973,6 +1007,319 @@
             settingsSubmitBtn.textContent = 'Update Password';
         }
     });
+
+
+    /* ══════════════════════════════════════════════════════
+       SECURE NOTES — CRUD, Modal, Search, Re-encryption
+       ══════════════════════════════════════════════════════ */
+
+    /* ---------- Notes: Fetch & Decrypt ---------- */
+    async function fetchNotes() {
+        try {
+            let data = null;
+            const res = await supabase
+                .from('notes')
+                .select('*')
+                .order('sort_order', { ascending: true })
+                .order('updated_at', { ascending: false });
+
+            if (res.error) {
+                // Fallback if sort_order column does not exist in DB yet
+                const fallbackRes = await supabase
+                    .from('notes')
+                    .select('*')
+                    .order('updated_at', { ascending: false });
+                if (fallbackRes.error) throw fallbackRes.error;
+                data = fallbackRes.data;
+            } else {
+                data = res.data;
+            }
+
+            notesList = [];
+            for (let item of data) {
+                let decryptedContent = '[Decryption Error]';
+                try {
+                    decryptedContent = await window.VaultCrypto.decrypt(item.content, item.iv, cryptoKey);
+                } catch (e) {
+                    console.error("Failed to decrypt note:", item.id, e);
+                }
+                notesList.push({
+                    ...item,
+                    decryptedContent: decryptedContent
+                });
+            }
+
+            notesDisplayOrder = notesList.map(x => x.id);
+            renderNotes(notesList);
+        } catch (err) {
+            // Silently handle if the notes table doesn't exist yet
+            if (err.message && (err.message.includes('does not exist') || err.code === '42P01')) {
+                console.warn('Notes table does not exist yet. Run schema.sql to create it.');
+                notesList = [];
+                notesDisplayOrder = [];
+                renderNotes([]);
+                return;
+            }
+            console.error("Fetch Notes Error:", err);
+            showToast('Notes Error', 'Could not load notes: ' + err.message, 'error');
+        }
+    }
+
+    /* ---------- Notes: Render Card Grid ---------- */
+    function renderNotes(items) {
+        notesGridContainer.innerHTML = '';
+        const emptyState = document.getElementById('notes-empty-state');
+
+        if (items.length === 0) {
+            notesGridContainer.style.display = 'none';
+            if (emptyState) emptyState.style.display = 'flex';
+            return;
+        }
+
+        notesGridContainer.style.display = '';
+        if (emptyState) emptyState.style.display = 'none';
+
+        items.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'note-card';
+            card.setAttribute('data-note-id', item.id);
+
+            const dateObj = new Date(item.updated_at);
+            const dateStr = dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+
+            const isError = item.decryptedContent === '[Decryption Error]';
+            const previewText = isError
+                ? '•••••••• encrypted ••••••••'
+                : escapeHTML(item.decryptedContent);
+            const previewClass = isError ? 'note-card-preview encrypted-preview' : 'note-card-preview';
+
+            const charCount = isError ? '—' : item.decryptedContent.length;
+
+            card.innerHTML = `
+                <div class="note-card-header">
+                    <div class="note-card-title">${escapeHTML(item.title)}</div>
+                    <div class="note-card-actions">
+                        <button type="button" class="btn-icon copy-note-btn" data-note-id="${item.id}" title="Copy to Clipboard">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                        <button type="button" class="btn-icon edit-note-btn" data-note-id="${item.id}" title="Edit Note">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 20h9"></path>
+                                <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+                            </svg>
+                        </button>
+                        <button type="button" class="btn-icon btn-icon-danger delete-note-btn" data-note-id="${item.id}" title="Delete Note">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="${previewClass}">${previewText}</div>
+                <div class="note-card-footer">
+                    <span class="note-card-date">${dateStr}</span>
+                    <span class="note-card-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        ${charCount} chars
+                    </span>
+                </div>
+            `;
+
+            notesGridContainer.appendChild(card);
+        });
+
+        addNoteCardListeners();
+    }
+
+    /* ---------- Notes: Card Event Listeners ---------- */
+    function addNoteCardListeners() {
+        // Click card body to edit
+        document.querySelectorAll('.note-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                // Don't open modal if clicking on action buttons
+                if (e.target.closest('.note-card-actions')) return;
+                const id = card.getAttribute('data-note-id');
+                const item = notesList.find(x => x.id === id);
+                if (item) openNoteModal(item);
+            });
+        });
+
+        // Copy note content
+        document.querySelectorAll('.copy-note-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = btn.getAttribute('data-note-id');
+                const item = notesList.find(x => x.id === id);
+                if (item && item.decryptedContent !== '[Decryption Error]') {
+                    navigator.clipboard.writeText(item.decryptedContent).then(() => {
+                        showToast('Copied', 'Note content copied to clipboard.', 'success');
+                    }).catch(() => {
+                        showToast('Copy Error', 'Clipboard access denied.', 'error');
+                    });
+                }
+            });
+        });
+
+        // Edit note
+        document.querySelectorAll('.edit-note-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = btn.getAttribute('data-note-id');
+                const item = notesList.find(x => x.id === id);
+                if (item) openNoteModal(item);
+            });
+        });
+
+        // Delete note
+        document.querySelectorAll('.delete-note-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const id = btn.getAttribute('data-note-id');
+                if (confirm('Are you sure you want to permanently delete this note?')) {
+                    try {
+                        const { error } = await supabase
+                            .from('notes')
+                            .delete()
+                            .eq('id', id);
+                        if (error) throw error;
+                        showToast('Note Deleted', 'Secure note removed successfully.', 'success');
+                        fetchNotes();
+                    } catch (err) {
+                        showToast('Deletion Error', err.message, 'error');
+                    }
+                }
+            });
+        });
+    }
+
+    /* ---------- Notes: Search / Filter ---------- */
+    if (notesSearchInput) {
+        notesSearchInput.addEventListener('input', () => {
+            const query = notesSearchInput.value.toLowerCase().trim();
+            const ordered = notesDisplayOrder
+                .map(id => notesList.find(x => x.id === id))
+                .filter(Boolean);
+
+            if (!query) {
+                renderNotes(ordered);
+                return;
+            }
+
+            const filtered = ordered.filter(item =>
+                item.title.toLowerCase().includes(query) ||
+                (item.decryptedContent !== '[Decryption Error]' && item.decryptedContent.toLowerCase().includes(query))
+            );
+
+            renderNotes(filtered);
+        });
+    }
+
+    /* ---------- Notes: Modal Controls ---------- */
+    function openNoteModal(editItem = null) {
+        noteForm.reset();
+        updateNoteCharCount();
+
+        if (editItem) {
+            noteFormTitle.textContent = 'Edit Note';
+            noteEditIdInput.value = editItem.id;
+            noteTitleInput.value = editItem.title;
+            const isError = editItem.decryptedContent === '[Decryption Error]';
+            noteContentInput.value = isError ? '' : editItem.decryptedContent;
+            updateNoteCharCount();
+        } else {
+            noteFormTitle.textContent = 'Add Note';
+            noteEditIdInput.value = '';
+        }
+
+        noteModal.classList.add('active');
+    }
+
+    function closeNoteModal() {
+        noteModal.classList.remove('active');
+        noteForm.reset();
+        updateNoteCharCount();
+    }
+
+    function updateNoteCharCount() {
+        if (noteCharCount && noteContentInput) {
+            const len = noteContentInput.value.length;
+            noteCharCount.textContent = `${len} character${len !== 1 ? 's' : ''}`;
+        }
+    }
+
+    if (addNoteBtn) addNoteBtn.addEventListener('click', () => openNoteModal());
+    if (closeNoteModalBtn) closeNoteModalBtn.addEventListener('click', closeNoteModal);
+    if (noteCancelBtn) noteCancelBtn.addEventListener('click', closeNoteModal);
+
+    if (noteModal) {
+        noteModal.addEventListener('click', (e) => {
+            if (e.target === noteModal) closeNoteModal();
+        });
+    }
+
+    if (noteContentInput) {
+        noteContentInput.addEventListener('input', updateNoteCharCount);
+    }
+
+    /* ---------- Notes: Save Form Submit ---------- */
+    if (noteForm) {
+        noteForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (noteSaveBtn) noteSaveBtn.disabled = true;
+
+            const editId = noteEditIdInput.value;
+            const title = noteTitleInput.value.trim();
+            const plainContent = noteContentInput.value;
+
+            try {
+                const encryptedData = await window.VaultCrypto.encrypt(plainContent, cryptoKey);
+
+                if (editId) {
+                    const { error } = await supabase
+                        .from('notes')
+                        .update({
+                            title: title,
+                            content: encryptedData.ciphertext,
+                            iv: encryptedData.iv,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', editId);
+
+                    if (error) throw error;
+                    showToast('Note Updated', 'Secure note saved successfully.', 'success');
+                } else {
+                    const { error } = await supabase
+                        .from('notes')
+                        .insert({
+                            user_id: session.user.id,
+                            title: title,
+                            content: encryptedData.ciphertext,
+                            iv: encryptedData.iv
+                        });
+
+                    if (error) throw error;
+                    showToast('Note Saved', 'New secure note added to vault.', 'success');
+                }
+
+                closeNoteModal();
+                fetchNotes();
+            } catch (err) {
+                showToast('Save Error', err.message, 'error');
+            } finally {
+                if (noteSaveBtn) noteSaveBtn.disabled = false;
+            }
+        });
+    }
 
 
     /* ---------- Import & Export Functionality ---------- */
@@ -1180,7 +1527,8 @@
     }
 
     /* ---------- Main Init ---------- */
-    // Initial fetch of password entries
+    // Initial fetch of password entries and notes
     fetchPasswords();
+    fetchNotes();
 
 })();

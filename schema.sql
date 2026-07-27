@@ -46,3 +46,37 @@ create trigger set_passwords_updated_at
   before update on public.passwords
   for each row
   execute function public.handle_updated_at();
+
+-- ═══════════════════════════════════════════════════
+-- 4. Create notes table (Secure Notes / Message Store)
+-- ═══════════════════════════════════════════════════
+create table if not exists public.notes (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users(id) on delete cascade not null,
+  title text not null,
+  content text not null,   -- Stores the base64-encoded encrypted ciphertext
+  iv text not null,        -- Stores the base64-encoded initialization vector (IV) for AES-GCM
+  sort_order integer default 0 not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- Enable Row Level Security (RLS) on notes
+alter table public.notes enable row level security;
+
+-- Create policies for notes
+drop policy if exists "Users can manage their own notes" on public.notes;
+
+create policy "Users can manage their own notes"
+  on public.notes
+  for all
+  to authenticated
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+-- 5. Create trigger on notes table
+drop trigger if exists set_notes_updated_at on public.notes;
+create trigger set_notes_updated_at
+  before update on public.notes
+  for each row
+  execute function public.handle_updated_at();
