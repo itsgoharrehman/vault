@@ -309,13 +309,131 @@
         toast.querySelector('.toast-close').addEventListener('click', dismiss);
     }
 
+    /* ---------- Custom Centered Confirmation Prompt System ---------- */
+    function showConfirm(options = {}) {
+        return new Promise((resolve) => {
+            let modal = document.getElementById('confirm-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'confirm-modal';
+                modal.className = 'confirm-modal-overlay';
+                modal.setAttribute('role', 'dialog');
+                modal.setAttribute('aria-modal', 'true');
+                modal.setAttribute('aria-hidden', 'true');
+                modal.innerHTML = `
+                    <div class="confirm-modal-card">
+                        <div class="confirm-modal-icon-wrap danger" id="confirm-modal-icon-container"></div>
+                        <div class="confirm-modal-body">
+                            <h3 class="confirm-modal-title" id="confirm-dialog-title"></h3>
+                            <p class="confirm-modal-desc" id="confirm-dialog-desc"></p>
+                        </div>
+                        <div class="confirm-modal-actions">
+                            <button type="button" class="btn-secondary" id="confirm-modal-cancel-btn">Cancel</button>
+                            <button type="button" class="btn-primary btn-danger-action" id="confirm-modal-submit-btn">Confirm</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+
+            const titleEl = document.getElementById('confirm-dialog-title');
+            const descEl = document.getElementById('confirm-dialog-desc');
+            const cancelBtn = document.getElementById('confirm-modal-cancel-btn');
+            const submitBtn = document.getElementById('confirm-modal-submit-btn');
+            const iconContainer = document.getElementById('confirm-modal-icon-container');
+
+            const {
+                title = 'Are you sure?',
+                message = 'This action cannot be undone.',
+                confirmText = 'Confirm',
+                cancelText = 'Cancel',
+                isDanger = true
+            } = options;
+
+            if (titleEl) titleEl.textContent = title;
+            if (descEl) descEl.textContent = message;
+            if (submitBtn) submitBtn.textContent = confirmText;
+            if (cancelBtn) cancelBtn.textContent = cancelText;
+
+            if (isDanger) {
+                if (submitBtn) submitBtn.className = 'btn-primary btn-danger-action';
+                if (iconContainer) {
+                    iconContainer.className = 'confirm-modal-icon-wrap danger';
+                    iconContainer.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+                }
+            } else {
+                if (submitBtn) submitBtn.className = 'btn-primary';
+                if (iconContainer) {
+                    iconContainer.className = 'confirm-modal-icon-wrap info';
+                    iconContainer.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+                }
+            }
+
+            const cleanup = () => {
+                modal.classList.remove('active');
+                modal.setAttribute('aria-hidden', 'true');
+                if (submitBtn) submitBtn.removeEventListener('click', onConfirm);
+                if (cancelBtn) cancelBtn.removeEventListener('click', onCancel);
+                modal.removeEventListener('click', onBackdropClick);
+                document.removeEventListener('keydown', onKeyDown);
+            };
+
+            const onConfirm = () => {
+                cleanup();
+                resolve(true);
+            };
+
+            const onCancel = () => {
+                cleanup();
+                resolve(false);
+            };
+
+            const onBackdropClick = (e) => {
+                if (e.target === modal) {
+                    onCancel();
+                }
+            };
+
+            const onKeyDown = (e) => {
+                if (e.key === 'Escape') {
+                    onCancel();
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    onConfirm();
+                }
+            };
+
+            if (submitBtn) submitBtn.addEventListener('click', onConfirm);
+            if (cancelBtn) cancelBtn.addEventListener('click', onCancel);
+            modal.addEventListener('click', onBackdropClick);
+            document.addEventListener('keydown', onKeyDown);
+
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+            setTimeout(() => {
+                if (submitBtn) submitBtn.focus();
+            }, 50);
+        });
+    }
+
+    window.showConfirm = showConfirm;
+
     /* ---------- Logout Flow ---------- */
     logoutBtns.forEach(btn => {
         btn.addEventListener('click', async () => {
-            try {
-                await supabase.auth.signOut();
-            } catch (err) {
-                showToast('Logout Error', err.message, 'error');
+            const confirmed = await showConfirm({
+                title: 'Sign Out',
+                message: 'Are you sure you want to sign out of your vault session?',
+                confirmText: 'Sign out',
+                cancelText: 'Cancel',
+                isDanger: false
+            });
+            if (confirmed) {
+                try {
+                    await supabase.auth.signOut();
+                } catch (err) {
+                    showToast('Logout Error', err.message, 'error');
+                }
             }
         });
     });
@@ -529,7 +647,14 @@
         document.querySelectorAll('.delete-row-btn').forEach(btn => {
             btn.addEventListener('click', async () => {
                 const id = btn.getAttribute('data-id');
-                if (confirm("Are you sure you want to permanently delete this password record?")) {
+                const confirmed = await showConfirm({
+                    title: 'Delete Password Record',
+                    message: 'Are you sure you want to permanently delete this password record? This action cannot be undone.',
+                    confirmText: 'Delete',
+                    cancelText: 'Cancel',
+                    isDanger: true
+                });
+                if (confirmed) {
                     try {
                         const { error } = await supabase
                             .from('passwords')
@@ -1162,7 +1287,14 @@
             btn.addEventListener('click', async (e) => {
                 e.stopPropagation();
                 const id = btn.getAttribute('data-note-id');
-                if (confirm('Are you sure you want to permanently delete this note?')) {
+                const confirmed = await showConfirm({
+                    title: 'Delete Secure Note',
+                    message: 'Are you sure you want to permanently delete this note? This action cannot be undone.',
+                    confirmText: 'Delete',
+                    cancelText: 'Cancel',
+                    isDanger: true
+                });
+                if (confirmed) {
                     try {
                         const { error } = await supabase
                             .from('notes')
