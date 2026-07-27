@@ -1,5 +1,5 @@
 // js/favicon-animator.js
-// Animated favicon: Lock morphs into a smiley with wagging "no" finger + title marquee
+// Smooth animated favicon + butter-smooth title ticker
 
 (function () {
     let favicon = document.querySelector("link[rel*='icon']");
@@ -10,181 +10,160 @@
     }
     favicon.type = 'image/png';
 
-    const canvas = document.createElement('canvas');
-    canvas.width = 32;
-    canvas.height = 32;
-    const ctx = canvas.getContext('2d');
+    const C = document.createElement('canvas');
+    C.width = 32;
+    C.height = 32;
+    const X = C.getContext('2d');
 
-    let frame = 0;
-    // Total cycle: 120 frames
-    // 0-30:   Lock displayed
-    // 30-45:  Fade lock out, fade smiley in
-    // 45-90:  Smiley with wagging finger
-    // 90-105: Fade smiley out, fade lock in
-    // 105-120: Lock displayed again
+    // Smooth easing
+    function ease(t) {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
 
-    function roundRect(x, y, w, h, r) {
-        if (ctx.roundRect) {
-            ctx.beginPath();
-            ctx.roundRect(x, y, w, h, r);
-        } else {
-            ctx.beginPath();
-            ctx.moveTo(x + r, y);
-            ctx.arcTo(x + w, y, x + w, y + h, r);
-            ctx.arcTo(x + w, y + h, x, y + h, r);
-            ctx.arcTo(x, y + h, x, y, r);
-            ctx.arcTo(x, y, x + w, y, r);
-            ctx.closePath();
+    // Cycle phases (using normalized 0-1 time per phase)
+    // Phase 0: Lock visible (2s)
+    // Phase 1: Slide lock out, shield in (1s)
+    // Phase 2: Shield visible (2s)
+    // Phase 3: Slide shield out, lock in (1s)
+    const phaseDurations = [2000, 1000, 2000, 1000]; // ms
+    const totalDuration = 6000;
+    let startTime = performance.now();
+
+    function clip() {
+        X.beginPath();
+        if (X.roundRect) X.roundRect(0, 0, 32, 32, 6);
+        else X.rect(0, 0, 32, 32);
+        X.clip();
+    }
+
+    function bg() {
+        X.fillStyle = '#0f0f0f';
+        X.beginPath();
+        if (X.roundRect) X.roundRect(0, 0, 32, 32, 6);
+        else X.rect(0, 0, 32, 32);
+        X.fill();
+    }
+
+    function drawLock(y) {
+        X.fillStyle = '#ffffff';
+        X.beginPath();
+        if (X.roundRect) X.roundRect(7, 17 + y, 18, 12, 2.5);
+        else X.rect(7, 17 + y, 18, 12);
+        X.fill();
+
+        X.strokeStyle = '#ffffff';
+        X.lineWidth = 3;
+        X.lineCap = 'round';
+        X.beginPath();
+        X.arc(16, 14 + y, 5.5, Math.PI, 0);
+        X.stroke();
+
+        X.fillStyle = '#0f0f0f';
+        X.beginPath();
+        X.arc(16, 22 + y, 2, 0, Math.PI * 2);
+        X.fill();
+        X.fillRect(15, 23.5 + y, 2, 2.5);
+    }
+
+    function drawShield(y) {
+        X.fillStyle = '#ffffff';
+        X.beginPath();
+        X.moveTo(16, 4 + y);
+        X.lineTo(6, 9 + y);
+        X.lineTo(6, 17 + y);
+        X.quadraticCurveTo(6, 28 + y, 16, 30 + y);
+        X.quadraticCurveTo(26, 28 + y, 26, 17 + y);
+        X.lineTo(26, 9 + y);
+        X.closePath();
+        X.fill();
+
+        X.strokeStyle = '#0f0f0f';
+        X.lineWidth = 3.5;
+        X.lineCap = 'round';
+        X.lineJoin = 'round';
+        X.beginPath();
+        X.moveTo(11, 17 + y);
+        X.lineTo(14.5, 22 + y);
+        X.lineTo(22, 12 + y);
+        X.stroke();
+    }
+
+    // Throttle favicon data URL updates to ~20fps to avoid jank
+    let lastFaviconUpdate = 0;
+    const faviconInterval = 50; // 20fps
+
+    function render(now) {
+        requestAnimationFrame(render);
+
+        if (now - lastFaviconUpdate < faviconInterval) return;
+        lastFaviconUpdate = now;
+
+        const elapsed = (now - startTime) % totalDuration;
+
+        // Determine current phase and progress within it
+        let phase = 0;
+        let phaseTime = elapsed;
+        for (let i = 0; i < phaseDurations.length; i++) {
+            if (phaseTime < phaseDurations[i]) {
+                phase = i;
+                break;
+            }
+            phaseTime -= phaseDurations[i];
+            phase = i + 1;
         }
-    }
+        if (phase >= phaseDurations.length) phase = 0;
 
-    function drawBg() {
-        ctx.fillStyle = '#111111';
-        roundRect(0, 0, 32, 32, 6);
-        ctx.fill();
-    }
+        const t = ease(phaseTime / phaseDurations[phase]);
 
-    function drawLock(alpha) {
-        ctx.globalAlpha = alpha;
+        X.clearRect(0, 0, 32, 32);
+        bg();
+        X.save();
+        clip();
 
-        // Lock body
-        ctx.fillStyle = '#ffffff';
-        roundRect(6, 16, 20, 13, 3);
-        ctx.fill();
-
-        // Shackle
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 3;
-        ctx.lineCap = 'round';
-        ctx.beginPath();
-        ctx.arc(16, 14, 6, Math.PI, 0, false);
-        ctx.stroke();
-
-        // Keyhole
-        ctx.fillStyle = '#111111';
-        ctx.beginPath();
-        ctx.arc(16, 22, 2.5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillRect(14.8, 23, 2.4, 3);
-
-        ctx.globalAlpha = 1;
-    }
-
-    function drawSmiley(alpha, fingerAngle) {
-        ctx.globalAlpha = alpha;
-
-        // Face circle
-        ctx.fillStyle = '#FFD93D';
-        ctx.beginPath();
-        ctx.arc(16, 17, 11, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Left eye
-        ctx.fillStyle = '#111111';
-        ctx.beginPath();
-        ctx.arc(12, 15, 1.8, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Right eye — winking
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = '#111111';
-        ctx.beginPath();
-        ctx.arc(20, 15, 1.8, 0.2, Math.PI - 0.2, true);
-        ctx.stroke();
-
-        // Smirk mouth
-        ctx.lineWidth = 1.5;
-        ctx.strokeStyle = '#111111';
-        ctx.beginPath();
-        ctx.arc(16, 19, 5, 0.3, Math.PI - 0.3, false);
-        ctx.stroke();
-
-        // Wagging finger — drawn as a small hand to the right
-        ctx.save();
-        ctx.translate(27, 10);
-        ctx.rotate(fingerAngle);
-
-        // Finger stick
-        ctx.strokeStyle = '#FFD93D';
-        ctx.lineWidth = 2.5;
-        ctx.lineCap = 'round';
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.lineTo(0, -8);
-        ctx.stroke();
-
-        // Fingertip circle
-        ctx.fillStyle = '#FFD93D';
-        ctx.beginPath();
-        ctx.arc(0, -8, 1.5, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.restore();
-
-        ctx.globalAlpha = 1;
-    }
-
-    function render() {
-        ctx.clearRect(0, 0, 32, 32);
-        drawBg();
-
-        const f = frame % 120;
-
-        if (f < 30) {
-            // Show lock
-            drawLock(1);
-        } else if (f < 45) {
-            // Crossfade: lock out, smiley in
-            const t = (f - 30) / 15;
-            drawLock(1 - t);
-            drawSmiley(t, 0);
-        } else if (f < 90) {
-            // Smiley with wagging finger
-            const wagFrame = f - 45;
-            const fingerAngle = Math.sin(wagFrame * 0.7) * 0.4;
-            drawSmiley(1, fingerAngle);
-        } else if (f < 105) {
-            // Crossfade: smiley out, lock in
-            const t = (f - 90) / 15;
-            const fingerAngle = Math.sin((f - 45) * 0.7) * 0.4;
-            drawSmiley(1 - t, fingerAngle);
-            drawLock(t);
+        if (phase === 0) {
+            drawLock(0);
+        } else if (phase === 1) {
+            drawLock(-t * 36);
+            drawShield(36 - t * 36);
+        } else if (phase === 2) {
+            drawShield(0);
         } else {
-            // Show lock
-            drawLock(1);
+            drawShield(-t * 36);
+            drawLock(36 - t * 36);
         }
 
-        favicon.href = canvas.toDataURL('image/png');
-        frame++;
+        X.restore();
+        favicon.href = C.toDataURL('image/png');
     }
 
-    // 12 FPS
-    setInterval(render, 83);
+    requestAnimationFrame(render);
 
-    // Title marquee with dot separators
+    // ─── Smooth Title Ticker ───
+    // Uses a fast interval with 1-char steps for a fluid scroll feel
     const baseTitle = document.title || 'Vault';
-    const marqueeStr = baseTitle + '  \u00B7  Secure  \u00B7  Zero Knowledge Encrypted  \u00B7  ';
-    const len = marqueeStr.length;
+    const gap = '    ';  // spacing between repeats
+    const tickerSrc = baseTitle + gap + 'Secure' + gap + 'Zero Knowledge Encrypted' + gap;
+    const len = tickerSrc.length;
     let pos = 0;
-    let titleTimer = null;
+    let tickerTimer = null;
 
-    function startMarquee() {
-        if (titleTimer) clearInterval(titleTimer);
-        titleTimer = setInterval(() => {
-            document.title = marqueeStr.substring(pos) + marqueeStr.substring(0, pos);
+    function startTicker() {
+        if (tickerTimer) clearInterval(tickerTimer);
+        tickerTimer = setInterval(() => {
+            document.title = tickerSrc.substring(pos) + tickerSrc.substring(0, pos);
             pos = (pos + 1) % len;
-        }, 300);
+        }, 150);
     }
 
-    startMarquee();
+    startTicker();
 
     document.addEventListener('visibilitychange', () => {
         if (document.hidden) {
-            if (titleTimer) clearInterval(titleTimer);
+            if (tickerTimer) clearInterval(tickerTimer);
             document.title = baseTitle;
         } else {
             pos = 0;
-            startMarquee();
+            startTicker();
         }
     });
 })();
