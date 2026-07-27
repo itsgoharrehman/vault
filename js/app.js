@@ -443,10 +443,7 @@
                             </svg>
                         </button>
                         <button type="button" class="btn-icon copy-row-pw-btn" data-id="${item.id}" title="Copy to Clipboard">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
+                            <i class="fa-regular fa-copy"></i>
                         </button>
                     </div>
                 </td>
@@ -454,18 +451,10 @@
                 <td class="text-right">
                     <div class="row-actions">
                         <button class="btn-icon edit-row-btn" data-id="${item.id}" title="Edit Credentials">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 20h9"></path>
-                                <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
-                            </svg>
+                            <i class="fa-solid fa-pen-to-square"></i>
                         </button>
                         <button class="btn-icon btn-icon-danger delete-row-btn" data-id="${item.id}" title="Delete Record">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="3 6 5 6 21 6"></polyline>
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                <line x1="10" y1="11" x2="10" y2="17"></line>
-                                <line x1="14" y1="11" x2="14" y2="17"></line>
-                            </svg>
+                            <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </div>
                 </td>
@@ -1100,24 +1089,13 @@
                     <div class="note-card-title">${escapeHTML(item.title)}</div>
                     <div class="note-card-actions">
                         <button type="button" class="btn-icon copy-note-btn" data-note-id="${item.id}" title="Copy to Clipboard">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
+                            <i class="fa-regular fa-copy"></i>
                         </button>
                         <button type="button" class="btn-icon edit-note-btn" data-note-id="${item.id}" title="Edit Note">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 20h9"></path>
-                                <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
-                            </svg>
+                            <i class="fa-solid fa-pen-to-square"></i>
                         </button>
                         <button type="button" class="btn-icon btn-icon-danger delete-note-btn" data-note-id="${item.id}" title="Delete Note">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="3 6 5 6 21 6"></polyline>
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                <line x1="10" y1="11" x2="10" y2="17"></line>
-                                <line x1="14" y1="11" x2="14" y2="17"></line>
-                            </svg>
+                            <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </div>
                 </div>
@@ -1355,7 +1333,7 @@
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 const timestamp = new Date().toISOString().slice(0, 10);
-                
+
                 link.setAttribute('href', url);
                 link.setAttribute('download', `vault_passwords_export_${timestamp}.csv`);
                 document.body.appendChild(link);
@@ -1422,8 +1400,8 @@
             let currentToken = '';
             for (let i = 0; i < line.length; i++) {
                 const char = line[i];
-                if (char === '"' && (i === 0 || line[i-1] !== '\\')) {
-                    if (inQuotes && line[i+1] === '"') {
+                if (char === '"' && (i === 0 || line[i - 1] !== '\\')) {
+                    if (inQuotes && line[i + 1] === '"') {
                         currentToken += '"';
                         i++; // skip escaped quote
                     } else {
@@ -1497,7 +1475,7 @@
                 if (error) throw error;
 
                 showToast('Import Successful', `Successfully imported ${recordsToInsert.length} password records.`, 'success');
-                
+
                 // Reset import state
                 selectedCsvFile = null;
                 if (csvFileInput) csvFileInput.value = '';

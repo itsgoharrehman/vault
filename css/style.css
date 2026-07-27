@@ -9,42 +9,42 @@
 /* ── Design Tokens ───────────────────────────────── */
 :root {
     /* Brand */
-    --ink:             #171717;
-    --canvas:          #fafafa;
+    --ink: #171717;
+    --canvas: #fafafa;
     --canvas-elevated: #ffffff;
-    --hairline:        #ebebeb;
-    --hairline-soft:   #f2f2f2;
+    --hairline: #ebebeb;
+    --hairline-soft: #f2f2f2;
 
     /* Text ladder */
-    --body:            #4d4d4d;
-    --mute:            #8f8f8f;
-    --faint:           #a1a1a1;
+    --body: #4d4d4d;
+    --mute: #8f8f8f;
+    --faint: #a1a1a1;
 
     /* Accent */
-    --link:            #0070f3;
-    --link-deep:       #0761d1;
-    --link-soft:       #d3e5ff;
+    --link: #0070f3;
+    --link-deep: #0761d1;
+    --link-soft: #d3e5ff;
 
     /* Semantic */
-    --error:           #ee0000;
-    --error-deep:      #c50000;
-    --warning:         #f5a623;
-    --success-color:   #16a34a;
+    --error: #ee0000;
+    --error-deep: #c50000;
+    --warning: #f5a623;
+    --success-color: #16a34a;
 
     /* Typography */
-    --font:            'Inter', Arial, system-ui, sans-serif;
-    --mono:            'JetBrains Mono', 'SF Mono', 'Menlo', 'Consolas', monospace;
+    --font: 'Inter', Arial, system-ui, sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', 'Menlo', 'Consolas', monospace;
 
     /* Radius */
-    --radius-sm:       6px;
-    --radius-md:       12px;
-    --radius-lg:       16px;
-    --radius-pill:     100px;
-    --radius-full:     9999px;
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-pill: 100px;
+    --radius-full: 9999px;
 
     /* Shadows */
-    --shadow-whisper:  0 1px 1px rgba(0,0,0,0.04);
-    --shadow-float:    0 2px 2px rgba(0,0,0,0.04), 0 8px 16px -4px rgba(0,0,0,0.08);
+    --shadow-whisper: 0 1px 1px rgba(0, 0, 0, 0.04);
+    --shadow-float: 0 2px 2px rgba(0, 0, 0, 0.04), 0 8px 16px -4px rgba(0, 0, 0, 0.08);
 
     /* Spacing */
     --sp-1: 4px;
@@ -57,16 +57,16 @@
     --sp-8: 64px;
 
     /* Legacy compat aliases for Tailwind-based HTML */
-    --bg:            var(--canvas);
-    --sidebar-bg:    var(--canvas-elevated);
-    --surface:       var(--hairline-soft);
-    --border:        var(--hairline);
-    --text:          var(--ink);
+    --bg: var(--canvas);
+    --sidebar-bg: var(--canvas-elevated);
+    --surface: var(--hairline-soft);
+    --border: var(--hairline);
+    --text: var(--ink);
     --text-secondary: var(--body);
-    --text-muted:    var(--mute);
-    --accent:        var(--ink);
-    --danger:        var(--error);
-    --radius:        var(--radius-sm);
+    --text-muted: var(--mute);
+    --accent: var(--ink);
+    --danger: var(--error);
+    --radius: var(--radius-sm);
     --radius-lg-old: var(--radius-md);
 }
 
@@ -1167,14 +1167,14 @@ input {
 }
 
 /* Explicit rule: when sidebar is collapsed, popover MUST pop out to the right of the 72px sidebar */
-aside#sidebar.is-collapsed ~ .profile-popover,
-aside.w-sidebar-collapsed ~ .profile-popover {
+aside#sidebar.is-collapsed~.profile-popover,
+aside.w-sidebar-collapsed~.profile-popover {
     left: 84px !important;
     bottom: 16px !important;
     width: 190px !important;
 }
 
-aside#sidebar.is-expanded ~ .profile-popover {
+aside#sidebar.is-expanded~.profile-popover {
     left: 16px !important;
     bottom: 76px !important;
     width: 230px !important;
@@ -1221,9 +1221,11 @@ aside#sidebar.is-expanded ~ .profile-popover {
 aside#sidebar.is-collapsed {
     width: 72px !important;
 }
+
 aside#sidebar.is-collapsed .sidebar-label {
     display: none !important;
 }
+
 aside#sidebar.is-collapsed .sidebar-toggle-icon {
     transform: rotate(180deg);
 }
@@ -1231,9 +1233,11 @@ aside#sidebar.is-collapsed .sidebar-toggle-icon {
 aside#sidebar.is-expanded {
     width: 260px !important;
 }
+
 aside#sidebar.is-expanded .sidebar-label {
     display: block !important;
 }
+
 aside#sidebar.is-expanded .sidebar-toggle-icon {
     transform: rotate(0deg);
 }
@@ -1428,25 +1432,25 @@ button:active,
         padding: 80px 16px 80px;
     }
 
-.btn-back {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: var(--radius-full);
-    color: var(--body);
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    transition: background 0.12s, color 0.12s, transform 0.1s;
-    flex-shrink: 0;
-}
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: var(--radius-full);
+        color: var(--body);
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        transition: background 0.12s, color 0.12s, transform 0.1s;
+        flex-shrink: 0;
+    }
 
-.btn-back:hover {
-    background: var(--hairline-soft);
-    color: var(--ink);
-}
+    .btn-back:hover {
+        background: var(--hairline-soft);
+        color: var(--ink);
+    }
 }
 
 /* Smallest Mobile */
@@ -1572,11 +1576,67 @@ button:active,
         opacity: 0;
         transform: translateY(-8px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
+
+/* ═══════════════════ ICON ANIMATIONS ═══════════════════ */
+.icon-logo {
+    transition: transform 0.3s ease;
+}
+
+.auth-logo:hover .icon-logo {
+    transform: scale(1.15) rotate(-5deg);
+}
+
+.tab-icon {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s;
+}
+
+.sidebar-tab:hover .tab-icon {
+    transform: scale(1.18);
+}
+
+.sidebar-tab.active .tab-icon {
+    color: var(--ink);
+}
+
+.icon-spin-hover {
+    transition: transform 0.4s ease;
+}
+
+.sidebar-tab:hover .icon-spin-hover {
+    transform: rotate(90deg) scale(1.15);
+}
+
+.icon-pulse {
+    animation: iconPulse 3s infinite ease-in-out;
+}
+
+@keyframes iconPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+}
+
+.btn-icon i {
+    font-size: 14px;
+    transition: transform 0.15s ease;
+}
+
+.btn-icon:hover i {
+    transform: scale(1.18);
+}
+
+.btn-icon-danger:hover i {
+    transform: scale(1.2) rotate(8deg);
+}
+
 
 /* ═══════════════════ SECURE NOTES ═══════════════════ */
 
@@ -1775,4 +1835,4 @@ button:active,
     .note-textarea {
         min-height: 160px;
     }
-}
+}

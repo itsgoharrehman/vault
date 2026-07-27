@@ -10,21 +10,22 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;1,14..32,400&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script id="tailwind-config">
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        "danger":       "#ee0000",
-                        "background":   "#fafafa",
-                        "surface":      "#f2f2f2",
+                        "danger": "#ee0000",
+                        "background": "#fafafa",
+                        "surface": "#f2f2f2",
                         "surface-variant": "#ebebeb",
-                        "primary":      "#171717",
-                        "on-primary":   "#ffffff",
+                        "primary": "#171717",
+                        "on-primary": "#ffffff",
                         "text-primary": "#171717",
                         "text-secondary": "#4d4d4d",
-                        "text-muted":   "#8f8f8f",
+                        "text-muted": "#8f8f8f",
                         "border-subtle": "#ebebeb",
                     },
                     spacing: {
@@ -73,14 +74,11 @@
     <header
         class="md:hidden fixed top-0 left-0 right-0 h-16 bg-surface border-b border-border-subtle flex items-center justify-between px-4 z-40">
         <div class="flex items-center gap-2">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                stroke-linecap="round" stroke-linejoin="round" class="text-primary">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
+            <i class="fa-solid fa-vault text-primary text-xl icon-pulse"></i>
             <span class="font-bold text-lg">Vault</span>
         </div>
-        <button class="p-1.5 rounded-lg hover:bg-surface-variant text-text-secondary hover:text-text-primary transition-colors focus:outline-none flex items-center justify-center"
+        <button
+            class="p-1.5 rounded-lg hover:bg-surface-variant text-text-secondary hover:text-text-primary transition-colors focus:outline-none flex items-center justify-center"
             id="mobile-hamburger-btn" aria-label="Toggle tab navigation menu">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
                 stroke-linecap="round" stroke-linejoin="round">
@@ -107,17 +105,15 @@
         <!-- Logo Section -->
         <div class="h-16 flex items-center justify-between px-4 lg:px-6 border-b border-border-subtle/50">
             <div class="flex items-center gap-3 overflow-hidden">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round" stroke-linejoin="round" class="text-primary shrink-0">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
+                <i class="fa-solid fa-vault text-primary text-xl shrink-0 icon-pulse"></i>
                 <span class="font-bold text-xl sidebar-label lg:block hidden">Vault</span>
             </div>
-            <button class="sidebar-toggle-btn hidden lg:flex p-1.5 rounded-lg hover:bg-surface-variant text-text-secondary hover:text-text-primary transition-colors items-center justify-center shrink-0"
+            <button
+                class="sidebar-toggle-btn hidden lg:flex p-1.5 rounded-lg hover:bg-surface-variant text-text-secondary hover:text-text-primary transition-colors items-center justify-center shrink-0"
                 id="sidebar-toggle-btn" aria-label="Toggle sidebar" title="Toggle sidebar">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round" stroke-linejoin="round" class="sidebar-toggle-icon transition-transform duration-200">
+                    stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-toggle-icon transition-transform duration-200">
                     <polyline points="15 18 9 12 15 6"></polyline>
                 </svg>
             </button>
@@ -125,43 +121,22 @@
         <!-- Navigation -->
         <nav class="sidebar-nav flex-1 py-4 px-3 space-y-1">
             <button class="sidebar-tab active" data-tab="passwords" title="Passwords">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
+                <i class="fa-solid fa-key tab-icon"></i>
                 <span class="font-medium sidebar-label lg:block hidden">Passwords</span>
             </button>
             <button class="sidebar-tab" data-tab="notes" title="Secure Notes">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                    <polyline points="10 9 9 9 8 9"></polyline>
-                </svg>
+                <i class="fa-solid fa-note-sticky tab-icon"></i>
                 <span class="font-medium sidebar-label lg:block hidden">Secure Notes</span>
             </button>
             <button class="sidebar-tab" data-tab="import-export" title="Import & Export">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="17 8 12 3 7 8"></polyline>
-                    <line x1="12" y1="3" x2="12" y2="15"></line>
-                </svg>
+                <i class="fa-solid fa-file-import tab-icon"></i>
                 <span class="font-medium sidebar-label lg:block hidden">Import & Export</span>
             </button>
             <button class="sidebar-tab" data-tab="profile" title="Settings">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="3"></circle>
-                    <path
-                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z">
-                    </path>
-                </svg>
+                <i class="fa-solid fa-gear tab-icon icon-spin-hover"></i>
                 <span class="font-medium sidebar-label lg:block hidden">Settings</span>
             </button>
+        </nav>
         </nav>
         <!-- Profile Bottom -->
         <div class="p-4 border-t border-border-subtle">
@@ -200,11 +175,7 @@
                 class="h-16 lg:h-20 flex items-center justify-between px-4 lg:px-8 border-b border-border-subtle shrink-0">
                 <h1 class="text-xl lg:text-2xl font-semibold">Passwords</h1>
                 <button class="btn-primary" id="add-pw-btn">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
+                    <i class="fa-solid fa-plus"></i>
                     Add
                 </button>
             </header>
@@ -214,12 +185,7 @@
                     <!-- Search -->
                     <div class="w-full md:w-[320px]">
                         <div class="relative">
-                            <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" width="16" height="16"
-                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="11" cy="11" r="8"></circle>
-                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                            </svg>
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted text-xs"></i>
                             <input
                                 class="w-full bg-surface border border-border-subtle rounded-lg py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-primary/50 transition-colors"
                                 id="search-input" placeholder="Search..." type="text" />
@@ -331,7 +297,8 @@
                     <div class="bg-surface rounded-xl border border-border-subtle p-6 space-y-4">
                         <div class="flex items-start gap-4">
                             <div class="p-3 bg-surface-variant rounded-lg text-primary shrink-0">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                     <polyline points="7 10 12 15 17 10"></polyline>
                                     <line x1="12" y1="15" x2="12" y2="3"></line>
@@ -339,13 +306,17 @@
                             </div>
                             <div class="flex-1">
                                 <h3 class="text-lg font-semibold mb-1">Export Vault Data</h3>
-                                <p class="text-sm text-text-secondary">Download a decrypted copy of all your saved account credentials in CSV format.</p>
+                                <p class="text-sm text-text-secondary">Download a decrypted copy of all your saved
+                                    account credentials in CSV format.</p>
                             </div>
                         </div>
-                        <div class="pt-2 flex flex-wrap gap-3 items-center justify-between border-t border-border-subtle/50">
-                            <span class="text-xs text-text-muted">File format: CSV (Account Name, Username, Password)</span>
+                        <div
+                            class="pt-2 flex flex-wrap gap-3 items-center justify-between border-t border-border-subtle/50">
+                            <span class="text-xs text-text-muted">File format: CSV (Account Name, Username,
+                                Password)</span>
                             <button class="btn-primary" id="export-csv-btn">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                     <polyline points="7 10 12 15 17 10"></polyline>
                                     <line x1="12" y1="15" x2="12" y2="3"></line>
@@ -359,7 +330,8 @@
                     <div class="bg-surface rounded-xl border border-border-subtle p-6 space-y-4">
                         <div class="flex items-start gap-4">
                             <div class="p-3 bg-surface-variant rounded-lg text-primary shrink-0">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                     <polyline points="17 8 12 3 7 8"></polyline>
                                     <line x1="12" y1="3" x2="12" y2="15"></line>
@@ -367,20 +339,26 @@
                             </div>
                             <div class="flex-1">
                                 <h3 class="text-lg font-semibold mb-1">Import Passwords</h3>
-                                <p class="text-sm text-text-secondary">Upload a CSV file containing your accounts. They will be encrypted with your master key and stored in your vault.</p>
+                                <p class="text-sm text-text-secondary">Upload a CSV file containing your accounts. They
+                                    will be encrypted with your master key and stored in your vault.</p>
                             </div>
                         </div>
                         <div class="space-y-4 pt-2 border-t border-border-subtle/50">
-                            <div class="border-2 border-dashed border-border-subtle hover:border-primary/50 rounded-xl p-8 text-center cursor-pointer transition-colors" id="import-dropzone">
+                            <div class="border-2 border-dashed border-border-subtle hover:border-primary/50 rounded-xl p-8 text-center cursor-pointer transition-colors"
+                                id="import-dropzone">
                                 <input type="file" id="csv-file-input" accept=".csv" class="hidden">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-3 text-text-muted">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                                    class="mx-auto mb-3 text-text-muted">
                                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                                     <polyline points="14 2 14 8 20 8"></polyline>
                                     <line x1="12" y1="18" x2="12" y2="12"></line>
                                     <line x1="9" y1="15" x2="15" y2="15"></line>
                                 </svg>
-                                <p class="text-sm font-medium text-text-primary" id="dropzone-text">Click to select or drag & drop a CSV file</p>
-                                <p class="text-xs text-text-muted mt-1">Expected columns: title/name, username/email, password</p>
+                                <p class="text-sm font-medium text-text-primary" id="dropzone-text">Click to select or
+                                    drag & drop a CSV file</p>
+                                <p class="text-xs text-text-muted mt-1">Expected columns: title/name, username/email,
+                                    password</p>
                             </div>
                             <div class="flex justify-end">
                                 <button class="btn-primary" id="import-csv-btn" disabled>
@@ -419,15 +397,24 @@
                                 <label for="cur-pw" class="field-label">Current password</label>
                                 <div class="field-input-wrap">
                                     <input type="password" id="cur-pw" class="field-input field-input-padded" required>
-                                    <button class="input-action-btn toggle-settings-pw" data-target="cur-pw" type="button" aria-label="Toggle visibility" title="Show password">
-                                        <svg class="eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <button class="input-action-btn toggle-settings-pw" data-target="cur-pw"
+                                        type="button" aria-label="Toggle visibility" title="Show password">
+                                        <svg class="eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                            stroke-linejoin="round">
                                             <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
                                             <circle cx="12" cy="12" r="3"></circle>
                                         </svg>
-                                        <svg class="eye-closed" style="display:none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <svg class="eye-closed" style="display:none" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
-                                            <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
-                                            <path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
+                                            <path
+                                                d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68">
+                                            </path>
+                                            <path
+                                                d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61">
+                                            </path>
                                             <line x1="2" y1="2" x2="22" y2="22"></line>
                                         </svg>
                                     </button>
@@ -436,16 +423,26 @@
                             <div class="field">
                                 <label for="new-pw" class="field-label">New password</label>
                                 <div class="field-input-wrap">
-                                    <input type="password" id="new-pw" class="field-input field-input-padded" required minlength="8">
-                                    <button class="input-action-btn toggle-settings-pw" data-target="new-pw" type="button" aria-label="Toggle visibility" title="Show password">
-                                        <svg class="eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <input type="password" id="new-pw" class="field-input field-input-padded" required
+                                        minlength="8">
+                                    <button class="input-action-btn toggle-settings-pw" data-target="new-pw"
+                                        type="button" aria-label="Toggle visibility" title="Show password">
+                                        <svg class="eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                            stroke-linejoin="round">
                                             <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
                                             <circle cx="12" cy="12" r="3"></circle>
                                         </svg>
-                                        <svg class="eye-closed" style="display:none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <svg class="eye-closed" style="display:none" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
-                                            <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
-                                            <path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
+                                            <path
+                                                d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68">
+                                            </path>
+                                            <path
+                                                d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61">
+                                            </path>
                                             <line x1="2" y1="2" x2="22" y2="22"></line>
                                         </svg>
                                     </button>
@@ -454,16 +451,26 @@
                             <div class="field">
                                 <label for="confirm-pw" class="field-label">Confirm new password</label>
                                 <div class="field-input-wrap">
-                                    <input type="password" id="confirm-pw" class="field-input field-input-padded" required minlength="8">
-                                    <button class="input-action-btn toggle-settings-pw" data-target="confirm-pw" type="button" aria-label="Toggle visibility" title="Show password">
-                                        <svg class="eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <input type="password" id="confirm-pw" class="field-input field-input-padded"
+                                        required minlength="8">
+                                    <button class="input-action-btn toggle-settings-pw" data-target="confirm-pw"
+                                        type="button" aria-label="Toggle visibility" title="Show password">
+                                        <svg class="eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                            stroke-linejoin="round">
                                             <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
                                             <circle cx="12" cy="12" r="3"></circle>
                                         </svg>
-                                        <svg class="eye-closed" style="display:none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <svg class="eye-closed" style="display:none" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
-                                            <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
-                                            <path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
+                                            <path
+                                                d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68">
+                                            </path>
+                                            <path
+                                                d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61">
+                                            </path>
                                             <line x1="2" y1="2" x2="22" y2="22"></line>
                                         </svg>
                                     </button>
@@ -532,14 +539,21 @@
                                 required="" type="password" />
                             <button class="input-action-btn" id="toggle-pw-vis" type="button"
                                 aria-label="Toggle visibility" title="Show password">
-                                <svg class="eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <svg class="eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
                                     <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
                                     <circle cx="12" cy="12" r="3"></circle>
                                 </svg>
-                                <svg class="eye-closed" style="display:none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <svg class="eye-closed" style="display:none" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
                                     <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
-                                    <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
-                                    <path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
+                                    <path
+                                        d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68">
+                                    </path>
+                                    <path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61">
+                                    </path>
                                     <line x1="2" y1="2" x2="22" y2="22"></line>
                                 </svg>
                             </button>
@@ -595,11 +609,13 @@
                 <input id="note-edit-id" type="hidden" />
                 <div class="field">
                     <label class="field-label" for="note-title">Title</label>
-                    <input class="field-input" id="note-title" placeholder="e.g. API Keys, Recovery Codes, Personal Note…" required type="text" />
+                    <input class="field-input" id="note-title"
+                        placeholder="e.g. API Keys, Recovery Codes, Personal Note…" required type="text" />
                 </div>
                 <div class="field">
                     <label class="field-label" for="note-content">Content</label>
-                    <textarea class="note-textarea" id="note-content" placeholder="Type your secure note here…" required></textarea>
+                    <textarea class="note-textarea" id="note-content" placeholder="Type your secure note here…"
+                        required></textarea>
                     <div class="note-char-count" id="note-char-count">0 characters</div>
                 </div>
                 <div class="form-actions">
