@@ -1339,6 +1339,21 @@ aside#sidebar.is-collapsed .sidebar-toggle-icon {
     transform: rotate(180deg);
 }
 
+aside#sidebar.is-collapsed .sidebar-tab {
+    justify-content: center !important;
+    padding: 10px 0 !important;
+}
+
+aside#sidebar.is-collapsed .profile-trigger {
+    justify-content: center !important;
+    padding: 10px 0 !important;
+}
+
+/* Hide logo image when sidebar is collapsed */
+aside#sidebar.is-collapsed .icon-pulse {
+    display: none !important;
+}
+
 aside#sidebar.is-expanded {
     width: 260px !important;
 }
@@ -1462,33 +1477,6 @@ button:active,
 
 .fab-btn {
     display: none;
-}
-
-/* Desktop Medium / Large Tablet (Collapsed Sidebar 768px - 1023px) */
-@media (max-width: 1023px) {
-    aside#sidebar:not(.is-expanded) {
-        width: 72px !important;
-    }
-
-    aside#sidebar:not(.is-expanded) .sidebar-label {
-        display: none !important;
-    }
-
-    aside#sidebar:not(.is-expanded) .sidebar-tab {
-        justify-content: center !important;
-        padding: 10px 0 !important;
-    }
-
-    aside#sidebar:not(.is-expanded) .profile-trigger {
-        justify-content: center !important;
-        border-radius: 0 !important;
-        padding: 10px 0 !important;
-    }
-
-    /* hide "Updated" column at medium widths */
-    .col-updated {
-        display: none !important;
-    }
 }
 
 /* Tablets & Small Mobile (Mobile Layout) */
@@ -1729,8 +1717,15 @@ button:active,
 }
 
 @keyframes iconPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.08); }
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.08);
+    }
 }
 
 .btn-icon i {
@@ -1794,6 +1789,7 @@ button:active,
     flex: 1;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -1817,6 +1813,7 @@ button:active,
     line-height: 1.6;
     display: -webkit-box;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     word-break: break-word;

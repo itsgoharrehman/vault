@@ -191,7 +191,7 @@
 
     if (sidebarToggleBtn && sidebarEl) {
         const isCollapsedSaved = localStorage.getItem('vault_sidebar_collapsed') === 'true';
-        if (isCollapsedSaved && window.innerWidth >= 1024) {
+        if (isCollapsedSaved && window.innerWidth >= 768) {
             sidebarEl.classList.add('is-collapsed');
             sidebarEl.classList.remove('is-expanded');
         }
